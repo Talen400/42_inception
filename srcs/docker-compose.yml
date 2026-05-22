@@ -17,6 +17,12 @@ services:
     networks:
       - inception_network
 
+  mariadb:
+    build: requirements/mariadb
+    image: mariadb:inception
+    container_name: mariadb
+
+
 networks:
   inception_network:
     driver: bridge

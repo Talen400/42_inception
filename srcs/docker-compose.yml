@@ -1,0 +1,22 @@
+# version: '3.8'
+
+services:
+  ngnix:
+    build: requirements/nginx
+    image: ngnix:inception
+    container_name: nginx
+    ports:
+      - "${WEB_PORT}:${WEB_PORT}"
+    environment:
+      - NGINX_HOST=${DOMAIN_NAME}
+      - NGINX_PORT=${WEB_PORT}
+    volumes:
+      - ${VOLUME_WORDPRESS}:/var/www/html
+    env_file:
+      - .env
+    networks:
+      - inception_network
+
+networks:
+  inception_network:
+    driver: bridge

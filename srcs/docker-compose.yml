@@ -10,10 +10,8 @@ services:
     environment:
       - NGINX_HOST=${DOMAIN_NAME}
       - NGINX_PORT=${WEB_PORT}
-    volumes:
-      - ${VOLUME_WORDPRESS}:/var/www/html
     env_file:
-      - .env
+      .env
     networks:
       - inception_network
 
@@ -21,7 +19,30 @@ services:
     build: requirements/mariadb
     image: mariadb:inception
     container_name: mariadb
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+      - db_root_password
+    networks:
+      - inception_network
+    volumes:
+      - ${VOLUME_MARIADB}:/mariadb
 
+
+secrets:
+  db_name:
+    file: ../secrets/db_name
+  db_password:
+    file: ../secrets/db_password
+  db_root_password:
+    file: ../secrets/db_root_password
+  db_user:
+    file: ../secrets/db_user
 
 networks:
   inception_network:

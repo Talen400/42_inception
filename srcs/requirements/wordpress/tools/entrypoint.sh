@@ -4,7 +4,8 @@ set -e
 DB_NAME=$(cat /run/secrets/db_name)
 DB_USER=$(cat /run/secrets/db_user)
 DB_PASS=$(cat /run/secrets/db_password)
-DB_HOST="mariadb"
+DB_HOST_NAME="mariadb"
+DB_HOST="${DB_HOST_NAME}:${DB_PORT}"
 
 if [ -z "$DB_NAME" ]; then
 	echo "Error: secret db_name is empty"
@@ -24,6 +25,8 @@ fi
 # or  WP_ADMIN_USER=$(cat /run/secrets/wp_admin_user 2>/dev/null || echo "admin")
 WP_ADMIN_USER=$(cat /run/secrets/wp_admin_user)
 WP_ADMIN_PASS=$(cat /run/secrets/wp_admin_pass)
+WP_USER=$(cat /run/secrets/wp_user)
+WP_USER_PASS=$(cat /run/secrets/wp_user_pass)
 
 if [ -z "$WP_ADMIN_USER" ]; then
 	echo "Error: secret wp_admin_user in empty"
@@ -31,6 +34,16 @@ if [ -z "$WP_ADMIN_USER" ]; then
 fi
 
 if [ -z "$WP_ADMIN_PASS" ]; then
+	echo "Error: secret wp_admin_user in empty"
+	exit 1
+fi
+
+if [ -z "$WP_USER" ]; then
+	echo "Error: secret wp_admin_user in empty"
+	exit 1
+fi
+
+if [ -z "$WP_USER_PASS" ]; then
 	echo "Error: secret wp_admin_user in empty"
 	exit 1
 fi
@@ -49,8 +62,8 @@ envsubst '$WP_PORT' < /etc/php82/php-fpm.d/www.conf.template > /etc/php82/php-fp
 echo "testing mariadb ($DB_HOST)..."
 RETRIES=30
 
-until mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" -e "SELECT 1" > /dev/null 2>&1; do
-	# não sabia que pode fazer assim ksksksksksksks
+until mariadb -h "$DB_HOST_NAME" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" -e "SELECT 1";do #> /dev/null 2>&1; do
+	echo "Trying: ${RETRIES}"
 	RETRIES=$((RETRIES-1))
 	if [ $RETRIES -le 0 ]; then
 		echo "Erro: Maria not working"
@@ -81,14 +94,15 @@ if [ ! -f wp-config.php ]; then
 		--title="$WP_TITLE" \
 		--admin_user="$WP_ADMIN_USER" \
 		--admin_password="$WP_ADMIN_PASS" \
+		--skip-email \
 		--admin_email="${WP_ADMIN_USER}@42.fr" \
 		--allow-root
 
 	echo "Creating a second user..."
 	wp user create \
-		--allow-root \
 		"${WP_USER}" \
 		"${WP_USER}@42.fr" \
+		--allow-root \
 		--user_pass="${WP_USER_PASS}" \
 		--role=author
 	
@@ -103,9 +117,15 @@ if [ ! -f wp-config.php ]; then
 
 else
 	echo "WordPress already, update permissions"
+
 	chown -R nobody:nobody /var/www/html
 	mkdir -p /var/www/html/wp-content/uploads
 	chmod -R 775 /var/www/html/wp-content/uploads
+
+	wp config set DB_NAME "$DB_NAME" --allow-root
+	wp config set DB_USER "$DB_USER" --allow-root
+	wp config set DB_PASSWORD "$DB_PASS" --allow-root
+	wp config set DB_HOST "$DB_HOST" --allow-root
 fi
 
 echo "Wordpress service initialization sucessfully"

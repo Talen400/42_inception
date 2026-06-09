@@ -3,7 +3,10 @@ FROM alpine:3.22.4
 # Install Ngnic, OpenSSL and gettext (envsubst) and tini
 RUN apk update \
 	&& apk add --no-cache \
-	nginx openssl tini gettext-envsubst
+	nginx \
+	openssl \
+	tini \
+	gettext-envsubst
 
 RUN mkdir -p /etc/nginx/ssl
 

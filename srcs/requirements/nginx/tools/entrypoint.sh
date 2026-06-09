@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # Use from .env DOMAIN_NAME in openssl.conf.template
+
 envsubst '$DOMAIN_NAME' < /etc/nginx/ssl/openssl.conf.template > /etc/nginx/ssl/openssl.conf
 
 # Generate the certificate SSL using configuration from openssl.conf
@@ -10,6 +11,6 @@ openssl req -config /etc/nginx/ssl/openssl.conf \
 	-days 365 -out /etc/nginx/ssl/nginx-selfsigned.crt
 
 # Use from .env DOMAIN_NAME in ngnix.conf.template
-envsubst '$DOMAIN_NAME' < /etc/nginx/http.d/default.conf.template > /etc/nginx/http.d/default.conf
+envsubst '$DOMAIN_NAME $WP_PORT' < /etc/nginx/http.d/default.conf.template > /etc/nginx/http.d/default.conf
 
 exec "$@"

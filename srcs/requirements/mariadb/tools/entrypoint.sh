@@ -1,11 +1,11 @@
 #!/bin/sh
 
-DB_DATABASE=$(cat /run/secrets/db_name)
+DB_NAME=$(cat /run/secrets/db_name)
 DB_USER=$(cat /run/secrets/db_user)
 DB_PASSWORD=$(cat /run/secrets/db_password)
 DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
 
-if [ -z "$DB_DATABASE" ]; then
+if [ -z "$DB_NAME" ]; then
 	echo "Error: secret db_name is empty"
 	exit 1
 fi
@@ -27,7 +27,7 @@ fi
 
 DB_DIR=/var/lib/mysql
 
-envsubst '$DB_PORT' < /etc/mariadb.template > /etc/mysql/mariadb.conf.d/50-server.cnf
+envsubst '$DB_PORT' < /etc/mariadb.template > /etc/my.cnf.d/mariadb-server.cnf
 
 
 if [ ! -d "$DB_DIR/mysql" ]; then
@@ -66,9 +66,9 @@ if [ ! -d "$DB_DIR/mysql" ]; then
 	mariadb -u root --socket=/run/mysqld/mysqld.sock << SQL
 	DELETE FROM mysql.user WHERE User NOT IN ('root', 'mysql') OR Host NOT in ('localhost');
 	SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$DB_ROOT_PASSWORD');
-	CREATE DATABASE IF NOT EXISTS \`${DB_DATABASE}\`;
+	CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;
 	CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
-	GRANT ALL PRIVILEGES ON \`${DB_DATABASE}\`.* TO '${DB_USER}'@'%';
+	GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'%';
 	FLUSH PRIVILEGES;
 SQL
 

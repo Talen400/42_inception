@@ -1,26 +1,27 @@
 # version: '3.8'
 
 services:
+
   ngnix:
     build: requirements/nginx
     image: ngnix:inception
     container_name: nginx
     ports:
       - "${WEB_PORT}:${WEB_PORT}"
-    environment:
-      - NGINX_HOST=${DOMAIN_NAME}
-      - NGINX_PORT=${WEB_PORT}
     env_file:
       .env
     networks:
       - inception_network
+    restart: unless-stopped
+    volumes:
+      - ${VOLUME_WORDPRESS}:/var/www/html
 
   mariadb:
     build: requirements/mariadb
     image: mariadb:inception
     container_name: mariadb
     ports:
-      - "8080:8080"
+      - "${DB_PORT}:${DB_PORT}"
     env_file:
       - .env
     secrets:
@@ -30,9 +31,29 @@ services:
       - db_root_password
     networks:
       - inception_network
+    restart: unless-stopped
     volumes:
-      - ${VOLUME_MARIADB}:/mariadb
+      - ${VOLUME_MARIADB}:/var/lib/mysql
 
+  wordpress:
+    build: requirements/wordpress
+    image: wordpress:inception
+    container_name: wordpress
+    ports:
+      - "${WP_PORT}:${WP_PORT}"
+    env_file:
+      - .env
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+      - wp_admin_user
+      - wp_admin_pass
+    networks:
+      - inception_network
+    restart: unless-stopped
+    volumes:
+      - ${VOLUME_WORDPRESS}:/var/www/html
 
 secrets:
   db_name:
@@ -43,6 +64,14 @@ secrets:
     file: ../secrets/db_root_password
   db_user:
     file: ../secrets/db_user
+  wp_admin_user:
+    file: ../secrets/wp_admin_user
+  wp_admin_pass:
+    file: ../secrets/wp_admin_pass
+  wp_user:
+    file: ../secrets/wp_user
+  wp_user_pass:
+    file: ../secrets/wp_user_pass
 
 networks:
   inception_network:

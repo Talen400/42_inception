@@ -7,6 +7,7 @@ RUN apk update \
 	curl \
 	mariadb-client \
 	bash \
+	redis \
 	tini \
 	gettext-envsubst
 

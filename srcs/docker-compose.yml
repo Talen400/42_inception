@@ -47,11 +47,80 @@ services:
       - wp_admin_pass
       - wp_user
       - wp_user_pass
+      - redis_password
     networks:
       - inception_network
     restart: unless-stopped
     volumes:
       - ${VOLUME_WORDPRESS}:/var/www/html
+
+  redis:
+    build: requirements/bonus/redis
+    image: redis:inception
+    container_name: redis
+    env_file:
+      - .env
+    secrets:
+      - redis_password
+    restart: unless-stopped
+    volumes:
+      - ${VOLUME_REDIS}:/data
+    networks:
+      - inception_network
+
+  ftp:
+    build: requirements/bonus/ftp
+    image: ftp/inception
+    container_name: ftp
+    restart: unless-stopped
+    ports:
+      - "21:21"
+      - "21000-21010:21000-21010"
+    env_file:
+      - .env
+    secrets:
+      - ftp_user
+      - ftp_password
+    volumes:
+      - ${VOLUME_WORDPRESS}:/var/www/html
+    networks:
+      - inception_network
+
+  adminer:
+    build: requirements/bonus/adminer
+    image: adminer:inception
+    container_name: adminer
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - inception_network
+
+  static:
+    build: requirements/bonus/static
+    image: static:inception
+    container_name: static
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - inception_network
+
+  portainer:
+    build: requirements/bonus/portainer
+    image: portainer:inception
+    container_name: portainer
+    restart: unless-stopped
+    env_file:
+      - .env
+    secrets:
+      - portainer_user
+      - portainer_password
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${VOLUME_PORTAINER}:/data
+    networks:
+      - inception_network
 
 secrets:
   db_name:
@@ -70,6 +139,19 @@ secrets:
     file: ../secrets/wp_user
   wp_user_pass:
     file: ../secrets/wp_user_pass
+
+  redis_password:
+    file: ../secrets/redis_password
+
+  ftp_user:
+    file: ../secrets/ftp_user
+  ftp_password:
+    file: ../secrets/ftp_password
+
+  portainer_user:
+    file: ../secrets/portainer_user
+  portainer_password:
+    file: ../secrets/portainer_password
 
 networks:
   inception_network:

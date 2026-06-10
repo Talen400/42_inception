@@ -11,6 +11,6 @@ openssl req -config /etc/nginx/ssl/openssl.conf \
 	-days 365 -out /etc/nginx/ssl/nginx-selfsigned.crt
 
 # Use from .env DOMAIN_NAME in ngnix.conf.template
-envsubst '$DOMAIN_NAME $WP_PORT' < /etc/nginx/http.d/default.conf.template > /etc/nginx/http.d/default.conf
+envsubst '$DOMAIN_NAME $WP_PORT $ADMINER_PORT $STATIC_PORT $PORTAINER_PORT' < /etc/nginx/http.d/default.conf.template > /etc/nginx/http.d/default.conf
 
 exec "$@"

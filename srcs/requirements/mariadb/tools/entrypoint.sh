@@ -5,25 +5,10 @@ DB_USER=$(cat /run/secrets/db_user)
 DB_PASSWORD=$(cat /run/secrets/db_password)
 DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
 
-if [ -z "$DB_NAME" ]; then
-	echo "Error: secret db_name is empty"
-	exit 1
-fi
-
-if [ -z "$DB_USER" ]; then
-	echo "Error: secret db_user is empty"
-	exit 1
-fi
-
-if [ -z "$DB_PASSWORD" ]; then
-	echo "Error: secret db_password is empty"
-	exit 1
-fi
-
-if [ -z "$DB_ROOT_PASSWORD" ]; then
-	echo "Error: secret db_root_password is empty"
-	exit 1
-fi
+[ -z "$DB_NAME" ]	&& echo "Error: secret db_name is empty" && exit 1
+[ -z "$DB_USER" ]	&& echo "Error: secret db_user is empty" && exit 1
+[ -z "$DB_PASSWORD" ]	&& echo "Error: secret db_password is empty" && exit 1
+[ -z "$DB_ROOT_PASSWORD" ]	&& echo "Error: secret db_root_password is empty" && exit 1
 
 DB_DIR=/var/lib/mysql
 

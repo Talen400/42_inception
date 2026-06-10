@@ -5,6 +5,8 @@ all: build up
 volumes:
 	sudo mkdir -p $(VOLUME_MARIADB)
 	sudo mkdir -p $(VOLUME_WORDPRESS)
+	sudo mkdir -p $(VOLUME_REDIS)
+	sudo mkdir -p $(VOLUME_PORTAINER)
 
 build: volumes
 	docker compose -f $(DOCKER_COMPOSE_FILE) build --no-cache
@@ -23,6 +25,8 @@ fclean:
 	docker compose -f $(DOCKER_COMPOSE_FILE) down --volumes --remove-orphans --rmi all
 	sudo rm -rf $(VOLUME_MARIADB)
 	sudo rm -rf $(VOLUME_WORDPRESS)
+	sudo rm -rf $(VOLUME_REDIS)
+	sudo rm -rf $(VOLUME_PORTAINER)
 
 re: fclean all
 

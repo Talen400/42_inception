@@ -84,19 +84,19 @@ cd inception
 2. Create the secrets directory and files:
 ```sh
 mkdir -p secrets
-echo "your_db_name"        > secrets/db_name
-echo "your_db_user"        > secrets/db_user
-echo "your_db_password"    > secrets/db_password
-echo "your_root_password"  > secrets/db_root_password
-echo "your_wp_admin"       > secrets/wp_admin_user
-echo "your_wp_admin_pass"  > secrets/wp_admin_pass
-echo "your_wp_user"        > secrets/wp_user
-echo "your_wp_user_pass"   > secrets/wp_user_pass
-echo "your_redis_pass"     > secrets/redis_password
-echo "your_ftp_user"       > secrets/ftp_user
-echo "your_ftp_pass"       > secrets/ftp_password
-echo "your_portainer_user" > secrets/portainer_user
-echo "your_portainer_pass" > secrets/portainer_password
+echo -n "your_db_name"        > secrets/db_name
+echo -n "your_db_user"        > secrets/db_user
+echo -n "your_db_password"    > secrets/db_password
+echo -n "your_root_password"  > secrets/db_root_password
+echo -n "your_wp_admin"       > secrets/wp_admin_user
+echo -n "your_wp_admin_pass"  > secrets/wp_admin_pass
+echo -n "your_wp_user"        > secrets/wp_user
+echo -n "your_wp_user_pass"   > secrets/wp_user_pass
+echo -n "your_redis_pass"     > secrets/redis_password
+echo -n "your_ftp_user"       > secrets/ftp_user
+echo -n "your_ftp_pass"       > secrets/ftp_password
+echo -n "your_portainer_user" > secrets/portainer_user
+echo -n "your_portainer_pass" > secrets/portainer_password
 ```
 
 3. Add the domain to `/etc/hosts`:

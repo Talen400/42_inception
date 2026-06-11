@@ -165,6 +165,33 @@ else
 	info "FTP: 'nc' command not found, skipping port scan (Container status checked in step 1)"
 fi
 
-echo -e "\nFinal Results: ${GREEN}$PASS passed${NC} / ${RED}$FAIL failed${NC}"
+# B4. Acess portainer
 
+portainer_code=$(curl -skL -o /dev/null -w "%{http_code}" "https://$DOMAIN/portainer/")
+if [ "$portainer_code" = "200" ] || [ "$portainer_code" = "302" ]; then
+    ok "Portainer: Web panel reachable (HTTP $portainer_code)"
+else
+    fail "Portainer: returned HTTP $portainer_code"
+fi
+
+# B5. static
+
+static_code=$(curl -skL -o /dev/null -w "%{http_code}" "https://$DOMAIN/static/")
+if [ "$static_code" = "200" ] || [ "$portainer_code" = "302" ]; then
+    ok "Static site: reachable via NGINX proxy"
+else
+    fail "Static site: returned HTTP $static_code"
+fi
+
+# B6. Volumes
+
+for vol in data/mariadb data/wordpress data/redis; do
+    if [ -d "/home/tlavared/$vol" ]; then
+        ok "Volume /home/tlavared/$vol exists"
+    else
+        fail "Volume /home/tlavared/$vol missing"
+    fi
+done
+
+echo -e "\nFinal Results: ${GREEN}$PASS passed${NC} / ${RED}$FAIL failed${NC}"
 [ $FAIL -eq 0 ] && exit 0 || exit 1

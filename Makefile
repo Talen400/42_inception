@@ -27,6 +27,7 @@ fclean:
 	sudo rm -rf $(VOLUME_WORDPRESS)
 	sudo rm -rf $(VOLUME_REDIS)
 	sudo rm -rf $(VOLUME_PORTAINER)
+	docker volume prune -f
 
 re: fclean all
 

@@ -120,6 +120,10 @@ else
 	wp config set DB_PASSWORD "$DB_PASS" --allow-root
 	wp config set DB_HOST "$DB_HOST" --allow-root
 
+	echo "wp-option Domain..."
+	wp option update siteurl "https://${DOMAIN_NAME}" --allow-root
+	wp option update home "https://${DOMAIN_NAME}" --allow-root
+
 	echo "redis..."
 	wp config set WP_REDIS_HOST redis --allow-root
 	wp config set WP_REDIS_PORT "${REDIS_PORT}" --allow-root

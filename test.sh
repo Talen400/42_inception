@@ -1,6 +1,7 @@
 #!/bin/bash
 
-DOMAIN="${DOMAIN_NAME:-tlavared.42.fr}"
+NAME=tlavared
+DOMAIN="${DOMAIN_NAME:-${NAME}.42.fr}"
 PASS=0
 FAIL=0
 
@@ -186,10 +187,10 @@ fi
 # B6. Volumes
 
 for vol in data/mariadb data/wordpress data/redis; do
-    if [ -d "/home/tlavared/$vol" ]; then
-        ok "Volume /home/tlavared/$vol exists"
+    if [ -d "/home/${NAME}/$vol" ]; then
+        ok "Volume /home/${NAME}/$vol exists"
     else
-        fail "Volume /home/tlavared/$vol missing"
+        fail "Volume /home/${NAME}/$vol missing"
     fi
 done
 

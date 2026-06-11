@@ -14,7 +14,7 @@ services:
       - inception_network
     restart: unless-stopped
     volumes:
-      - ${VOLUME_WORDPRESS}:/var/www/html
+      - wordpress_data:/var/www/html
 
   mariadb:
     build: requirements/mariadb
@@ -31,7 +31,7 @@ services:
       - inception_network
     restart: unless-stopped
     volumes:
-      - ${VOLUME_MARIADB}:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
 
   wordpress:
     build: requirements/wordpress
@@ -52,7 +52,7 @@ services:
       - inception_network
     restart: unless-stopped
     volumes:
-      - ${VOLUME_WORDPRESS}:/var/www/html
+      - wordpress_data:/var/www/html
 
   redis:
     build: requirements/bonus/redis
@@ -64,7 +64,7 @@ services:
       - redis_password
     restart: unless-stopped
     volumes:
-      - ${VOLUME_REDIS}:/data
+      - redis_data:/data
     networks:
       - inception_network
 
@@ -82,7 +82,7 @@ services:
       - ftp_user
       - ftp_password
     volumes:
-      - ${VOLUME_WORDPRESS}:/var/www/html
+      - wordpress_data:/var/www/html
     networks:
       - inception_network
 
@@ -118,7 +118,7 @@ services:
       - portainer_password
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${VOLUME_PORTAINER}:/data
+      - portainer_data:/data
     networks:
       - inception_network
 
@@ -152,6 +152,36 @@ secrets:
     file: ../secrets/portainer_user
   portainer_password:
     file: ../secrets/portainer_password
+
+volumes:
+  wordpress_data:
+    name: wordpress
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${VOLUME_WORDPRESS}
+  mariadb_data:
+    name: maria
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${VOLUME_MARIADB}
+  redis_data:
+    name: redis
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${VOLUME_REDIS}
+  portainer_data:
+    name: portainer
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${VOLUME_PORTAINER}
 
 networks:
   inception_network:
